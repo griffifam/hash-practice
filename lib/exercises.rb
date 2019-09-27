@@ -36,10 +36,12 @@ end
 
 # This method will return the k most common elements
 # in the case of a tie it will select the first occuring element.
-# Time Complexity: ?
-# Space Complexity: ?
+# Time Complexity: O(n) - its O(n) going through the list to fill the hash.
+# I'm not sure of the big O for sorting a hash - O(log)n? At worse, k == length of list so
+# returning the Kth frequent elements is O(n). Filling the hash itself is O(1).
+# Space Complexity: O(n) - based on created a hash and filling it with list
 def top_k_frequent_elements(list, k)
-  # array = [a, a, a, b, b, , c, c, d, e]]
+  # array = [a, a, a, b, b, , c, c, d, e]
   if list.empty?
     return []
   elsif k == 0
@@ -60,7 +62,7 @@ def top_k_frequent_elements(list, k)
     i += 1
   end
 
-  frequency = frequency.sort {|a1,a2| a2[1]<=>a1[1]}
+  frequency = frequency.sort {|a1,a2| a2[1]<=>a1[1]} #don't know time/space of this
   result = []
   i = 0
   while i < k
@@ -75,62 +77,92 @@ end
 #   Each element can either be a ".", or a digit 1-9
 #   The same digit cannot appear twice or more in the same 
 #   row, column or 3x3 subgrid
-# Time Complexity: ?
-# Space Complexity: ?
+# Time Complexity: O(n)^2
+# Space Complexity: O(n)
 def valid_sudoku(table)
-  i = 0
-  while i < table.length
-    row = validate_row(table[i])
-    if row == false
-      return false
-    else
-      i += 1
-    end
-  end
   # binding.pry
-  column = validate_column(table)
-  if column == true
+  if validate_rows(table) && validate_columns(table) && in_box?(table)
     return true
   else
     return false
   end
 end
 
-def validate_row(array)
-  i = 0
-  validator = get_hash
-  while i < array.length
-      element = array[i]
-      if validator[element]
-        validator[element] -= 1
+def validate_rows(table)
+  row = 0
+  while row < table.length
+    validator = get_hash
+    idx = 0
+
+    while idx < table[row].length
+      element = table[row][idx]
+
+      if element != '.'
+        if validator[element]
+          validator[element] -= 1
+        end
         value = validator[element]
         if value.to_i < 0
           return false
         end
       end
-    i += 1
+
+      idx += 1
+    end
+
+    row += 1
   end
   return true
 end
 
-def validate_column(grid)
-  y = 0
-  while y < grid.length
+def validate_columns(table)
+  col = 0
+  while col < table.length
     validator = get_hash
-    x = 0 #will be column
-    while x < grid.length
-      element = grid[x][y]
-      if validator[element]
-        validator[element] -= 1
+    idx = 0
+
+    while idx < table[col].length
+      element = table[idx][col]
+
+      if element != '.'
+        if validator[element]
+          validator[element] -= 1
+        end
         value = validator[element]
         if value.to_i < 0
           return false
         end
       end
-      x += 1
+
+      idx += 1
     end
-    y += 1
+
+    col += 1
   end
+  return true
+end
+
+def in_box?(table)
+  grids = table.each_slice(3).map{|third| third.transpose.each_slice(3).map{|slice| slice.transpose}}.flatten(1)
+
+  grids.each do |box|
+    hash_box = {}
+
+    3.times do |row|
+      3.times do |col|
+        curr = box[row][col]
+
+        if hash_box[curr]
+          return false
+        end
+
+        if curr != '.'
+          hash_box[curr] = 1
+        end
+      end
+    end
+  end
+
   return true
 end
 

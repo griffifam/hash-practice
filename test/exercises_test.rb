@@ -174,7 +174,7 @@ describe "exercises" do
       expect(valid).must_equal false
     end
 
-    xit "fails for a duplicate number in a sub-box" do
+    it "fails for a duplicate number in a sub-box" do
       # Arrange
       table = [
         ["5","3",".",".","7",".",".",".","."],
@@ -195,7 +195,7 @@ describe "exercises" do
       expect(valid).must_equal false
     end
 
-    xit "fails for a duplicate number in a bottom right sub-box" do
+    it "fails for a duplicate number in a bottom right sub-box" do
       # Arrange
       table = [
         ["5","3",".",".","7",".",".",".","."],
